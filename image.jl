@@ -2,7 +2,7 @@ using LinearAlgebra
 using FileIO
 using Images
 
-img = load("Matisse.jpeg")
+img = load("/Users/nhoojaroy/Desktop/Smoke Simulation/Class-Projects/Matisse.jpeg")
 display(img)
 display(size(img))
 R = Float64.(red.(img))
@@ -23,6 +23,11 @@ function find_k(gray_matrix, F)
             break
         end
     end
+    println("l-2 Norm")
+    for m in needed-5: needed
+        err = norm(gray_matrix - specific_decomp(gray_matrix, m))
+        display(err)
+    end
     return needed
 end
 
@@ -34,6 +39,11 @@ function find_k_F(gray_matrix, F)
             needed = k
             break
         end
+    end
+    println("Frobenius Norm")
+    for m in needed-5: needed
+        err = norm(gray_matrix - specific_decomp(gray_matrix, m))
+        display(err)
     end
     return needed
 end
@@ -64,9 +74,24 @@ display(kF)
 
 
 
-# It is clear from the SVD for this specific code that breaking down the channels and storing only the first k
-# singular values is in some way efficient. However, for this specific case, using the 2-norm v/s Frobenius Norm seems
-# to have minimal marginal difference i.e. both k values (equivalently number of singular values required) seem to be the same.
-#
-# Claude Code was used to debug syntax, and add the RGB channe; deconstruction. I am freshly learning Julia so some references to
-# existing libraries were made using GeminiAi.
+"""
+Project Report:
+
+1. The 2-norm implemented on the image matrix gave a bound of k = 195 singular values for a relative error of
+    5%. The F-norm similarly pointed towards a set of the first 195 singular values to contain the compression error to less than 5%.
+    The error values for the last two k = 194, 195 for each of the norms are:
+        Frobenius: 13.435309919693124, 13.325011055009652
+        2-Norm: 13.435309919693124, 13.325011055009652
+
+    For the last few error values for k -> 195, it also looks like the errors are floating close to each other, which is an interesting
+    finding for the matrix.
+
+2. If A is an m x n, A_k can be stored with k(m+n+1) many values, because compressing the matrix means we are only storing the first k-singular values.
+    In the expression this is + k term, in k x m + k x n + k. Similarly, we are only storing first k columns of U, and first k rows of the V^* matrix,
+    totaling to k(m + n + 1)
+
+3. AI was used to aid the completion of this project. I am new to Julia so it was primarily used to query translations of python code to Julia, and find
+    needed libraries for project complettion. Particularly, Claude AI was used for the RGB deconstruction process, since I was unfamiliar with this process.
+    For library and function/ method queries Gemini was used.
+
+"""
