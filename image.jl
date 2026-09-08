@@ -91,7 +91,10 @@ Project Report:
     totaling to k(m + n + 1)
 
 3. AI was used to aid the completion of this project. I am new to Julia so it was primarily used to query translations of python code to Julia, and find
-    needed libraries for project complettion. Particularly, Claude AI was used for the RGB deconstruction process, since I was unfamiliar with this process.
+    needed libraries for project complettion. Particularly, Claude AI was used for the RGB deconstruction process, originally, the reconstructed image I created was grayscale.
     For library and function/ method queries Gemini was used.
+
+4. Not sure how to check storage space of each original, and compressed matrices for this scenario. Since some deconstruction into RGB channel was made, I am expecting to have to find
+    storage(R+G+B), or something similar.
 
 """
