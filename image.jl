@@ -18,14 +18,14 @@ function find_k(gray_matrix, F)
     start = 4
     needed = length(F.S)
     for k in start:length(F.S)
-        if norm(gray_matrix - specific_decomp(gray_matrix, k), 2) <= 0.05 * norm(gray_matrix, 2)
+        if opnorm(gray_matrix - specific_decomp(gray_matrix, k), 2) <= 0.05 * opnorm(gray_matrix, 2)
             needed = k
             break
         end
     end
     println("l-2 Norm")
     for m in needed-5: needed
-        err = norm(gray_matrix - specific_decomp(gray_matrix, m))
+        err = opnorm(gray_matrix - specific_decomp(gray_matrix, m),2)
         display(err)
     end
     return needed
@@ -40,7 +40,7 @@ function find_k_F(gray_matrix, F)
             break
         end
     end
-    println("Frobenius Norm")
+    println("\nFrobenius Norm")
     for m in needed-5: needed
         err = norm(gray_matrix - specific_decomp(gray_matrix, m))
         display(err)
@@ -66,8 +66,8 @@ kF = find_k_F(gray, F)
 img_k = reconstruct(k)
 img_kF = reconstruct(kF)
 
-save("reconstructed_k.jpg", img_k)
-save("reconstructed_kF.jpg", img_kF)
+save("Matisse_reconstructed_k.jpg", img_k)
+save("Matisse_reconstructed_kF.jpg", img_kF)
 
 display(k)
 display(kF)
@@ -77,7 +77,9 @@ display(kF)
 """
 Project Report:
 
-1. The 2-norm implemented on the image matrix gave a bound of k = 195 singular values for a relative error of
+1.
+    **Note: this following section is wrong, but has been included to showcase the debugging process".
+    The 2-norm implemented on the image matrix gave a bound of k = 195 singular values for a relative error of
     5%. The F-norm similarly pointed towards a set of the first 195 singular values to contain the compression error to less than 5%.
     The error values for the last two k = 194, 195 for each of the norms are:
         Frobenius: 13.435309919693124, 13.325011055009652
@@ -85,16 +87,32 @@ Project Report:
 
     For the last few error values for k -> 195, it also looks like the errors are floating close to each other, which is an interesting
     finding for the matrix.
+    
+    ** Note: The above information is wrong, in that the frobenius norm was wrongly specified. This update was made after class, when investigating why results seemed
+    oddly tame.**
 
-2. If A is an m x n, A_k can be stored with k(m+n+1) many values, because compressing the matrix means we are only storing the first k-singular values.
+    It seems Julia's Frobenius Norm, is the default norm(.), however, induced norms are specified as: opnorm(matrix, p-value), this completely changed the result.
+    Post-this change, the same methods were implemented on Matisse II, which resulted in a lower search index for l-2 norm, and a significantly higher search bound 
+    for F-norm i.e. 18, 145 respectively. The last few error terms are now:
+        l-2 Norm: 6.704000252565492, 6.561054565920171
+        F-norm: 7.366262672242972, 7.258263963088615
+    
+    As such however, Frobenius reconstrcution is much more crisp over the 2-norm reconstruction. This seems to be a clear tradeoff in storing less singular values v/s
+    storing as much information about a matrix as you can/ or is needed for image quality during compression process.
+
+
+2.
+    If A is an m x n, A_k can be stored with k(m+n+1) many values, because compressing the matrix means we are only storing the first k-singular values.
     In the expression this is + k term, in k x m + k x n + k. Similarly, we are only storing first k columns of U, and first k rows of the V^* matrix,
     totaling to k(m + n + 1)
 
-3. AI was used to aid the completion of this project. I am new to Julia so it was primarily used to query translations of python code to Julia, and find
-    needed libraries for project complettion. Particularly, Claude AI was used for the RGB deconstruction process, originally, the reconstructed image I created was grayscale.
+3.
+    AI was used to aid the completion of this project. I am new to Julia so it was primarily used to query translations of python code to Julia, and find
+    needed libraries for project completion. Particularly, Claude AI was used for the RGB deconstruction process. Originally, the reconstructed image I created was grayscale.
     For library and function/ method queries Gemini was used.
 
-4. Not sure how to check storage space of each original, and compressed matrices for this scenario. Since some deconstruction into RGB channel was made, I am expecting to have to find
-    storage(R+G+B), or something similar.
+4.
+    Not sure how to check storage space of each original, and compressed matrices for this scenario. Since some deconstruction into RGB channel was made, I am expecting to have to find
+    storage(R+G+B) individually and summing them up. Intuitively, it is immediate from the dimensional reduction that the image has been compressed.
 
 """
