@@ -15,3 +15,21 @@ C = V * Λ * V'
 
 println("\nConjugate Transpose Decomposition Matrix")
 display(C)
+
+B = V * Λ * inv(V)
+
+println("\nInverse Decomposition Matrix")
+display(B)
+
+println("\nDeterminant of V:")
+println(det(V))
+
+r = rank(A)
+vr = rank(V)
+
+
+println("\nRank of A:")
+display(r)
+
+println("\nRank of V:")
+display(vr)
